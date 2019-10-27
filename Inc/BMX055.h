@@ -18,6 +18,9 @@
 #define BMX055_GYRO_CHIP_ID      0x0F
 #define BMX055_MGNT_CHIP_ID      0x32
 
+#define OFFSET_SAMPLE    200
+#define LPF_RATE         0.0
+
 typedef enum {
 	RANGE_2G  = 0b00000011,
 	RANGE_4G  = 0b00001010,
@@ -42,7 +45,7 @@ typedef enum {
 	RANGE_1000DPS = 0b00000001,
 	RANGE_500DPS  = 0b00000010,
 	RANGE_250DPS  = 0b00000011,
-	RANGE_125_DPS = 0b00000100
+	RANGE_125DPS = 0b00000100
 }GYRO_RANGE;
 
 typedef enum {
@@ -61,6 +64,9 @@ typedef enum {
 #define ACCL_PMU_RANGE_ADDR      0x0F
 #define ACCL_PMU_BW_ADDR         0x10
 #define ACCL_PMU_LPW_ADDR        0x11
+#define ACCL_X_LSB               0x02
+#define ACCL_Y_LSB               0x04
+#define ACCL_Z_LSB               0x06
 
 /* Accel register structure */
 typedef union {
@@ -74,11 +80,32 @@ typedef union {
 	}BIT;
 }ACCL_PMU_LPW_REG;
 
+typedef struct {
+	double accl_x;
+	double accl_y;
+	double accl_z;
+}ACCL_DATA;
+
+typedef union {
+	uint8_t d_array_bit[6];
+	struct {
+		uint8_t x_lsb :8;
+		uint8_t x_msb :8;
+		uint8_t y_lsb :8;
+		uint8_t y_msb :8;
+		uint8_t z_lsb :8;
+		uint8_t z_msb :8;
+	}BIT;
+}ACCL_DATA_REG;
+
 /* Gyro register address */
 #define GYRO_CHIP_ID_ADDR        0x00
 #define GYRO_RANGE_ADDR          0x0F
 #define GYRO_BW_ADDR             0x10
 #define GYRO_LPM1_ADDR           0x11
+#define GYRO_X_LSB               0x02
+#define GYRO_Y_LSB               0x04
+#define GYRO_Z_LSB               0x06
 
 /* Gyro register structure */
 typedef union {
@@ -93,12 +120,34 @@ typedef union {
 	}BIT;
 }GYRO_LPM1_REG;
 
+typedef struct {
+	double gyro_x;
+	double gyro_y;
+	double gyro_z;
+}GYRO_DATA;
+
+typedef union {
+	uint8_t d_array_bit[6];
+	struct {
+		uint8_t x_lsb :8;
+		uint8_t x_msb :8;
+		uint8_t y_lsb :8;
+		uint8_t y_msb :8;
+		uint8_t z_lsb :8;
+		uint8_t z_msb :8;
+	}BIT;
+}GYRO_DATA_REG;
+
 /* Magnetometer register address */
 #define MGNT_CHIP_ID_ADDR        0x40
 #define MGNT_PWR_CTRL_ADDR       0x4B
 
 
 /* Prototypes */
+HAL_StatusTypeDef BMX055_GetGyro(uint8_t lsb_addr, GYRO_DATA *data);
+HAL_StatusTypeDef BMX055_GetGyroRaw(uint8_t lsb_addr, GYRO_DATA *data);
+HAL_StatusTypeDef BMX055_GetAccl(uint8_t lsb_addr, ACCL_DATA *data);
+HAL_StatusTypeDef BMX055_GetAcclRaw(uint8_t lsb_addr, ACCL_DATA *data);
 HAL_StatusTypeDef BMX055_InitAccl(ACCL_RANGE range, ACCL_BAND_WIDTH bw, ACCL_PMU_LPW_REG reg);
 HAL_StatusTypeDef BMX055_InitGyro(GYRO_RANGE range, GYRO_BAND_WIDTH bw, GYRO_LPM1_REG reg);
 HAL_StatusTypeDef BMX055_ReadChipID(uint8_t slave_addr, uint8_t *id);

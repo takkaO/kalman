@@ -96,20 +96,45 @@ int main(void) {
 	HAL_StatusTypeDef ret;
 	ACCL_PMU_LPW_REG a_pmu_lpw;
 	a_pmu_lpw.data = 0;
-	ret = BMX055_InitAccl(RANGE_2G, BW_7_81_Hz, a_pmu_lpw);
+	ret = BMX055_InitAccl(RANGE_2G, BW_1000_Hz, a_pmu_lpw);
 	println("%d", ret);
+	if (ret != HAL_OK) {
+		while(1);
+	}
 
 	GYRO_LPM1_REG g_lpm;
 	g_lpm.data = 0;
-	ret = BMX055_InitGyro(RANGE_125_DPS, BW_32_Hz, g_lpm);
+	ret = BMX055_InitGyro(RANGE_250DPS, BW_116_Hz, g_lpm);
 	println("%d", ret);
+	if (ret != HAL_OK) {
+		while(1);
+	}
 
+	ACCL_DATA accl_data;
+	GYRO_DATA gyro_data;
+
+	int i;
+	for (i =0; i<200; i++) {
+		BMX055_GetAccl(ACCL_X_LSB, &accl_data);
+		println("%f, %f", accl_data.accl_y, accl_data.accl_z);
+		//HAL_Delay(10);
+	}
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
+		/*
+		BMX055_GetAccl(ACCL_X_LSB, &accl_data);
+		println("%f, %f, %f", accl_data.accl_x, accl_data.accl_y, accl_data.accl_z);
 
+
+		BMX055_GetGyro(GYRO_X_LSB, &gyro_data);
+		//println("%f, %f, %f", gyro_data.gyro_x, gyro_data.gyro_y, gyro_data.gyro_z);
+		degree_x += gyro_data.gyro_x * 0.01;
+		println("%f", degree_x);
+		HAL_Delay(10);
+		*/
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
